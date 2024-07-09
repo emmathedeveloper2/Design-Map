@@ -1,0 +1,7 @@
+{
+  "databaseDirRoot": "/src",
+  "language": "ts",
+  "generateAST": false,
+  "outFile": "db",
+  "api": {}
+}

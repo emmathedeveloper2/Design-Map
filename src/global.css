@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+@font-face {
+  font-family: "black";
+  src: url("/fonts/Geist-Black.ttf");
+}
+@font-face {
+  font-family: "medium";
+  src: url("/fonts/Geist-Medium.ttf");
+}
+@font-face {
+  font-family: "regular";
+  src: url("/fonts/Geist-Regular.ttf");
+}
+::-webkit-scrollbar {
+  display: none;
+}
+body,
+html {
+  height: 100%;
+  width: 100%;
+  font-family: "regular";
+  -webkit-user-select: none;
+  user-select: none;
+}
+pre {
+  font-family: "regular";
+}
+input,
+textarea {
+  outline: none;
+}
