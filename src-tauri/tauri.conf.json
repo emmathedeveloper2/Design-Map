@@ -19,6 +19,17 @@
         "all": true
       }
     },
+    "updater": {
+      "active": true,
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU4MEVFOUY5QjkxRTQ1M0EKUldRNlJSNjUrZWtPV0VUZlM2NFd2aHdTdU5YWFBLNzM4WXZtMFpyZ0QrblFSZHlsdTJvUVZETW0K",
+      "endpoints": [
+        "https://gist.githubusercontent.com/emmathedeveloper2/454b25d8474d42991470769e8df1e5e8/raw/design-map-updater.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    },
     "windows": [
       {
         "title": "Design Map",
