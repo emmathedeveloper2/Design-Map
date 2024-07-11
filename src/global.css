@@ -18,6 +18,36 @@
   font-family: "regular";
   src: url("/fonts/Geist-Regular.ttf");
 }
+[data-theme="light"] {
+  --app-secondary-color: #f1f1f1ae;
+  --app-primary-color: #545454;
+  /* --app-primary-color: tomato; */
+  --app-base-color: #fff;
+  --app-shadow-color: var(--app-secondary-color);
+  --app-text-color: #fff;
+
+  --app-on-secondary-color: #545454;
+  --app-on-base-color: #000;
+  --app-on-primary-color: #fff;
+  --line: #eee;
+}
+[data-theme="dark"] {
+  --app-secondary-color: #55555588;
+  --app-primary-color: #fff;
+  /* --app-primary-color: tomato; */
+  --app-base-color: #333;
+  --app-shadow-color: var(--app-base-color);
+  --app-text-color: #fff;
+
+  --app-on-secondary-color: #b8b8b8;
+  --app-on-base-color: #fff;
+  --app-on-primary-color: #333;
+  --line: #555;
+}
+body {
+  background-color: var(--app-base-color);
+  color: var(--app-on-base-color);
+}
 ::-webkit-scrollbar {
   display: none;
 }

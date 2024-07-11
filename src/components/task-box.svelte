@@ -21,7 +21,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:click={() => $active_task = task.id} class="h-full w-[200px] p-2 flex items-center justify-center {task.id == $active_task ? 'bg-black text-white' : 'bg-gray-100'}">
+<div on:click={() => $active_task = task.id} class="h-full w-[200px] p-2 flex items-center justify-center rounded-lg bg-[var(--app-base-color)] shadow-lg border {task.id == $active_task ? 'border-[var(--app-primary-color)]' : 'border-[var(--app-secondary-color)]'}">
   {#if task.subTasks}
     <small class="absolute bottom-4 right-4"></small>
   {/if}
@@ -30,6 +30,7 @@
     on:change={e => handleRename(e , task.id)}
     on:blur={e => handleRename(e , task.id)}
     value={task.label}
+    placeholder="Untitled"
     class="font-geist-black w-full p-2 bg-transparent text-center"
   />
 </div>

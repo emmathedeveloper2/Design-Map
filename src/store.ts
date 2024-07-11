@@ -46,14 +46,16 @@ export const deleteStage = async (stageId: number) => {
 
 export const addNewTask = async (projectId: number , stageId: number) => {
 
-    const newTask: Task = { projectId, stageId, label: "New Task", completed: false, isSubTask: false }
+    let newTask: Task = { projectId, stageId, label: "New Task", completed: false, isSubTask: false }
 
     const taskId = await db.task.addOne(newTask)
+
+    newTask = await db.task.getOne(taskId)
 
     tasks.update(prev => {
         if(!prev) return prev;
 
-        return [...prev , {...newTask , id: taskId}]
+        return [...prev , newTask].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
     })
 }
 
@@ -65,7 +67,7 @@ export const renameTask = async (taskId: number , newLabel: string) => {
         tasks.update(prev => {
             if(!prev) return prev;
     
-            return [...prev.filter(n => n.id !== taskId) , data].sort((a , b) => (b.createdAt as number) - (a.createdAt as number))
+            return [...prev.filter(n => n.id !== taskId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
         })
 
         return data
