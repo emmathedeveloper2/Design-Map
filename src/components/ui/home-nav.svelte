@@ -3,6 +3,7 @@
   import { fade } from "svelte/transition";
   import { projectId, theme } from "../../store";
   import db from "../../zashy/db";
+  import { FilePlus } from "lucide-svelte";
 
   let modal_open = false;
 
@@ -22,9 +23,9 @@
 
   const handleKeyPress = async (e: KeyboardEvent) => {
     if (e.key.toLowerCase() === "escape" && modal_open)
-      return modal_open = false
+      return (modal_open = false);
 
-    if (e.key.toLowerCase() === "n" && e.ctrlKey) modal_open = true
+    if (e.key.toLowerCase() === "n" && e.ctrlKey) modal_open = true;
   };
 </script>
 
@@ -35,16 +36,27 @@
 >
   <button
     on:click={() => (modal_open = true)}
-    class="w-full p-2 bg-[var(--app-primary-color)] text-[var(--app-on-primary-color)] rounded shadow-inner"
-    >New</button
+    class="w-full p-2 bg-[var(--app-primary-color)] text-[var(--app-on-primary-color)] rounded shadow-inner flex items-center justify-center gap-4"
   >
+    <FilePlus />
+    <p>New</p>
+  </button>
 
-  <div class="w-full p-2 bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded flex items-center relative group">
-    <div class="absolute opacity-0 pointer-events-none p-2 rounded-lg shadow-lg top-0 left-0 -translate-y-full border border-[var(--app-secondary-color)] bg-[var(--app-base-color)] w-full group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
-      {#each ['light' , 'dark'] as thm}
+  <div
+    class="w-full p-2 bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded flex items-center relative group"
+  >
+    <div
+      class="absolute opacity-0 pointer-events-none p-2 rounded-lg shadow-lg top-0 left-0 -translate-y-full border border-[var(--app-secondary-color)] bg-[var(--app-base-color)] w-full group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity"
+    >
+      {#each ["light", "dark"] as thm}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-        <p on:click={() => theme.set(thm)} class="first-letter:uppercase p-2 hover:bg-[var(--app-secondary-color)] transition-colors cursor-pointer rounded">{thm}</p>
+        <p
+          on:click={() => theme.set(thm)}
+          class="first-letter:uppercase p-2 hover:bg-[var(--app-secondary-color)] transition-colors cursor-pointer rounded"
+        >
+          {thm}
+        </p>
       {/each}
     </div>
     <p class="first-letter:uppercase">{$theme}</p>
@@ -76,7 +88,10 @@
         name="description"
         placeholder="Description"
       />
-      <button class="bg-[var(--app-primary-color)] text-[var(--app-on-primary-color)] p-1 rounded shadow-inner">Create</button>
+      <button
+        class="bg-[var(--app-primary-color)] text-[var(--app-on-primary-color)] p-1 rounded shadow-inner"
+        >Create</button
+      >
       <button
         class="bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] shadow-inner rounded p-1"
         type="button"
