@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { fade } from "svelte/transition";
-  import { projectId } from "../../store";
+  import { projectId, theme } from "../../store";
   import db from "../../zashy/db";
 
   let modal_open = false;
@@ -31,13 +31,24 @@
 <svelte:body on:keyup={handleKeyPress} />
 
 <nav
-  class="h-full w-[250px] shadow-lg rounded-lg flex flex-col items-center gap-4 bg-[var(--app-base-color)] backdrop-blur-sm p-4"
+  class="h-full w-[250px] shadow-lg rounded-lg flex flex-col justify-between items-center gap-4 bg-[var(--app-base-color)] backdrop-blur-sm p-4"
 >
   <button
     on:click={() => (modal_open = true)}
     class="w-full p-2 bg-[var(--app-primary-color)] text-[var(--app-on-primary-color)] rounded shadow-inner"
     >New</button
   >
+
+  <div class="w-full p-2 bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded flex items-center relative group">
+    <div class="absolute opacity-0 pointer-events-none p-2 rounded-lg shadow-lg top-0 left-0 -translate-y-full border border-[var(--app-secondary-color)] bg-[var(--app-base-color)] w-full group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+      {#each ['light' , 'dark'] as thm}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+        <p on:click={() => theme.set(thm)} class="first-letter:uppercase p-2 hover:bg-[var(--app-secondary-color)] transition-colors cursor-pointer rounded">{thm}</p>
+      {/each}
+    </div>
+    <p class="first-letter:uppercase">{$theme}</p>
+  </div>
 </nav>
 
 {#if modal_open}

@@ -18,7 +18,7 @@
 
     $stages = (
       await db.stage.getAllWhere({ projectId: $current_project.id } as any)
-    ).sort((a, b) => (b.createdAt as number) - (a.createdAt as number));
+    ).sort((a , b) => (a.createdAt as number) - (b.createdAt as number));
 
     $tasks = (
       await db.task.getAllWhere({ projectId: $current_project.id } as any)
@@ -84,7 +84,7 @@
         class="w-max flex items-center gap-4 rounded-full p-2 shadow-lg bg-[var(--app-base-color)]"
       >
         <small
-          >Stage {$stages.length - idx} •
+          >Stage {idx + 1} •
           <b
             class="outline-none text-[var(--app-primary-color)]"
             on:blur={(e) => handleRename(e, stage.id)}

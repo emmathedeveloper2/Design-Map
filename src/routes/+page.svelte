@@ -1,10 +1,15 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { projectId } from "../store";
+  import { projectId , theme } from "../store";
   import db from "../zashy/db";
   import HomeNav from "../components/ui/home-nav.svelte";
+  import { onMount } from "svelte";
 
   const load_projects = async () => await db.project.getAll();
+
+  onMount(() => {
+    document.body.setAttribute('data-theme' , $theme)
+  })
 </script>
 
 <div class="size-full flex p-2 gap-4">

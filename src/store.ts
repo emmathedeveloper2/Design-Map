@@ -9,16 +9,25 @@ export const stages = writable<Stage[]>([])
 
 export const tasks = writable<Task[]>([])
 
+export const theme = writable(localStorage.getItem('theme') || 'dark')
+
+theme.subscribe(value => {
+    localStorage.setItem('theme' , value)
+    document.body.setAttribute('data-theme' , value)
+})
+
 export const addNewStage = async (projectId: number) => {
 
-    const newStage: Stage = { projectId, name: "untitled" }
+    let newStage: Stage = { projectId, name: "untitled" }
 
     const stageId = await db.stage.addOne(newStage)
+
+    newStage = await db.stage.getOne(stageId)
 
     stages.update(prev => {
         if(!prev) return prev;
 
-        return [{...newStage , id: stageId} , ...prev]
+        return [...prev , newStage].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
     })
 }
 
@@ -30,7 +39,7 @@ export const renameStage = async (stageId: number , newName: string) => {
         stages.update(prev => {
             if(!prev) return prev;
     
-            return [...prev.filter(n => n.id !== stageId) , data].sort((a , b) => (b.createdAt as number) - (a.createdAt as number))
+            return [...prev.filter(n => n.id !== stageId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
         })
 
         return data
@@ -46,7 +55,7 @@ export const deleteStage = async (stageId: number) => {
 
 export const addNewTask = async (projectId: number , stageId: number) => {
 
-    let newTask: Task = { projectId, stageId, label: "New Task", completed: false, isSubTask: false }
+    let newTask: Task = { projectId, stageId, label: "", completed: false, isSubTask: false }
 
     const taskId = await db.task.addOne(newTask)
 
