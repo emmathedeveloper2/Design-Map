@@ -44,7 +44,7 @@ export const deleteProject = async (projectId: number) => {
 
 export const addNewStage = async (projectId: number) => {
 
-    let newStage: Stage = { projectId, name: "untitled" , createdAt: (new Date()).getTime() }
+    let newStage: Stage = { projectId, name: "untitled" , createdAt: (new Date()).getTime() } as any
 
     const stageId = await stageStore.addOne(newStage)
 
@@ -79,16 +79,33 @@ export const deleteStage = async (stageId: number) => {
     stages.update(prev => prev.filter(stg => stg._id != stageId))
 }
 
-export const addNewTask = async (projectId: number , stageId: number) => {
+export const addNewTask = async (projectId: number , stageId: number , extra?: { isSubTask: boolean , parentTaskId: number , label: string }) => {
 
-    let newTask: Task = { projectId, stageId, label: "", completed: false, isSubTask: false , createdAt: (new Date()).getTime() }
+    let newTask: Task = { projectId, stageId, label: extra?.label || "", completed: false, isSubTask: extra?.isSubTask || false , subTasks: [] , createdAt: (new Date()).getTime() } as any
 
     const taskId = await taskStore.addOne(newTask)
+
+    if(extra){
+        taskStore.updateOne(extra.parentTaskId , data => {
+            data.subTasks = [...data.subTasks , taskId]
+            data.completed = false
+            return data
+        })
+    }
 
     newTask = await taskStore.getOne(taskId) as Task
 
     tasks.update(prev => {
         if(!prev) return prev;
+
+        if(extra){
+            const foundParentTask = prev.find(t => t._id === extra.parentTaskId)
+
+            if(foundParentTask) {
+                foundParentTask.subTasks = [...foundParentTask.subTasks , taskId]
+                foundParentTask.completed = false
+            }
+        }
 
         return [...prev , newTask].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
     })
@@ -114,4 +131,21 @@ export const deleteTask = async (taskId: number) => {
     await taskStore.deleteOne(taskId)
 
     tasks.update(prev => prev.filter(t => t._id != taskId))
+}
+
+export const markTaskAsCompleted = async (taskId: number) => {
+
+    await taskStore.updateOne(taskId , data => {
+
+        tasks.update(prev => {
+
+            const found = prev.find(t => t._id === taskId)
+
+            if(found) found.completed = !found.completed
+
+            return prev
+        })
+
+        return {...data , completed: !data.completed}
+    })
 }

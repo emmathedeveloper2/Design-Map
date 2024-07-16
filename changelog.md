@@ -13,3 +13,11 @@
 - Code refactoring 🔧
 - Ability to delete and edit project 
 - Moved from Zashy to Nex for indexedDB
+
+# v1.1.1
+- Mark tasks and sub tasks as completed ✔
+- Add and Delete subtasks
+
+### UI changes
+
+- Added percentage text to see percentage progress 💯

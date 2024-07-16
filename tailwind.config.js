@@ -7,8 +7,9 @@ export default {
         "geist-black": ["black" , "serif"],
         "geist-medium": ["medium" , "serif"],
         "geist-regular": ["regular" , "serif"],
-      }
-    }
+      },
+    },
   },
+  darkMode: ['selector' , '[data-theme="dark"]'],
   plugins: []
 };
