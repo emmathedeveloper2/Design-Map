@@ -1,7 +1,10 @@
 import { writable } from "svelte/store";
-import db, { type Project, type Stage, type Task } from "./zashy/db";
+import { designMapDB as db } from "./db/db.js";
+import { projectStore, stageStore, taskStore, type Project, type Stage, type Task } from "./db/index.js";
 
 export const projectId = writable<number|undefined>(undefined)
+
+export const projectList = writable<Project[]>([])
 
 export const current_project = writable<Project|null>(null)
 
@@ -16,13 +19,36 @@ theme.subscribe(value => {
     document.body.setAttribute('data-theme' , value)
 })
 
+export const updateProject = async (projectId: number , name: string, description: string) => {
+
+    await projectStore.updateOne(projectId , (prev) => ({...prev , name , description}))
+
+    projectList.update(prev => {
+
+        const found = prev.find(p => p._id === projectId)
+
+        if(found) {
+            found.name = name
+            found.description = description
+        }
+
+        return prev
+    })
+}
+
+export const deleteProject = async (projectId: number) => {
+    await projectStore.deleteOne(projectId)
+
+    projectList.update(prev => prev.filter(p => p._id !== projectId))
+}
+
 export const addNewStage = async (projectId: number) => {
 
-    let newStage: Stage = { projectId, name: "untitled" }
+    let newStage: Stage = { projectId, name: "untitled" , createdAt: (new Date()).getTime() }
 
-    const stageId = await db.stage.addOne(newStage)
+    const stageId = await stageStore.addOne(newStage)
 
-    newStage = await db.stage.getOne(stageId)
+    newStage = await stageStore.getOne(stageId) as Stage
 
     stages.update(prev => {
         if(!prev) return prev;
@@ -33,13 +59,13 @@ export const addNewStage = async (projectId: number) => {
 
 export const renameStage = async (stageId: number , newName: string) => {
 
-    await db.stage.updateOne(stageId , data => {
+    await stageStore.updateOne(stageId , data => {
         data.name = newName
 
         stages.update(prev => {
             if(!prev) return prev;
     
-            return [...prev.filter(n => n.id !== stageId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
+            return [...prev.filter(n => n._id !== stageId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
         })
 
         return data
@@ -48,18 +74,18 @@ export const renameStage = async (stageId: number , newName: string) => {
 
 export const deleteStage = async (stageId: number) => {
 
-    await db.stage.deleteOne(stageId)
+    await stageStore.deleteOne(stageId)
 
-    stages.update(prev => prev.filter(stg => stg.id != stageId))
+    stages.update(prev => prev.filter(stg => stg._id != stageId))
 }
 
 export const addNewTask = async (projectId: number , stageId: number) => {
 
-    let newTask: Task = { projectId, stageId, label: "", completed: false, isSubTask: false }
+    let newTask: Task = { projectId, stageId, label: "", completed: false, isSubTask: false , createdAt: (new Date()).getTime() }
 
-    const taskId = await db.task.addOne(newTask)
+    const taskId = await taskStore.addOne(newTask)
 
-    newTask = await db.task.getOne(taskId)
+    newTask = await taskStore.getOne(taskId) as Task
 
     tasks.update(prev => {
         if(!prev) return prev;
@@ -70,13 +96,13 @@ export const addNewTask = async (projectId: number , stageId: number) => {
 
 export const renameTask = async (taskId: number , newLabel: string) => {
 
-    await db.task.updateOne(taskId , data => {
+    await taskStore.updateOne(taskId , data => {
         data.label = newLabel
 
         tasks.update(prev => {
             if(!prev) return prev;
     
-            return [...prev.filter(n => n.id !== taskId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
+            return [...prev.filter(n => n._id !== taskId) , data].sort((a , b) => (a.createdAt as number) - (b.createdAt as number))
         })
 
         return data
@@ -85,7 +111,7 @@ export const renameTask = async (taskId: number , newLabel: string) => {
 
 export const deleteTask = async (taskId: number) => {
 
-    await db.task.deleteOne(taskId)
+    await taskStore.deleteOne(taskId)
 
-    tasks.update(prev => prev.filter(t => t.id != taskId))
+    tasks.update(prev => prev.filter(t => t._id != taskId))
 }

@@ -10,18 +10,18 @@
     tasks,
   } from "../store";
   import TaskBox, { active_task } from "./task-box.svelte";
-  import db from "../zashy/db";
   import { ask } from "@tauri-apps/api/dialog";
+  import { stageStore, taskStore } from "../db";
 
   const load_stages = async () => {
     if (!$current_project) return;
 
     $stages = (
-      await db.stage.getAllWhere({ projectId: $current_project.id } as any)
+      await stageStore.getAllWhere({ projectId: $current_project._id } as any)
     ).sort((a , b) => (a.createdAt as number) - (b.createdAt as number));
 
     $tasks = (
-      await db.task.getAllWhere({ projectId: $current_project.id } as any)
+      await taskStore.getAllWhere({ projectId: $current_project._id } as any)
     ).sort((a, b) => (a.createdAt as number) - (b.createdAt as number));
   };
 
@@ -33,20 +33,20 @@
 
     if (!value || !id)
       return (currentTarget.textContent = $stages.find(
-        (stage) => stage.id === id
+        (stage) => stage._id === id
       )?.name as string);
 
     renameStage(id, value);
   };
 
   const handleAddTask = (stageId?: number) => {
-    if (!$current_project?.id || !stageId) return;
+    if (!$current_project?._id || !stageId) return;
 
-    addNewTask($current_project.id, stageId);
+    addNewTask($current_project._id, stageId);
   };
 
   const handleDelete = async (stageId?: number) => {
-    const found = $stages.find((s) => s.id == stageId);
+    const found = $stages.find((s) => s._id == stageId);
 
     const totalTasks = $tasks.filter((t) => t.stageId === stageId);
 
@@ -78,7 +78,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 {#if $current_project}
-  {#each $stages as stage, idx (stage.id)}
+  {#each $stages as stage, idx (stage._id)}
     <section class="w-full mb-4">
       <div
         class="w-max flex items-center gap-4 rounded-full p-2 shadow-lg bg-[var(--app-base-color)]"
@@ -87,20 +87,20 @@
           >Stage {idx + 1} •
           <b
             class="outline-none text-[var(--app-primary-color)]"
-            on:blur={(e) => handleRename(e, stage.id)}
-            on:change={(e) => handleRename(e, stage.id)}
+            on:blur={(e) => handleRename(e, stage._id)}
+            on:change={(e) => handleRename(e, stage._id)}
             contenteditable="true">{stage.name}</b
           ></small
         >
-        <small class="cursor-pointer rounded-full bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] px-2 flex items-center justify-center font-geist-medium" on:click={() => handleAddTask(stage.id)}>Add Task</small>
-        <small class="cursor-pointer rounded-full bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] px-2 flex items-center justify-center font-geist-medium" on:click={() => handleDelete(stage.id)}>Delete Stage</small>
+        <small class="cursor-pointer rounded-full bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] px-2 flex items-center justify-center font-geist-medium" on:click={() => handleAddTask(stage._id)}>Add Task</small>
+        <small class="cursor-pointer rounded-full bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] px-2 flex items-center justify-center font-geist-medium" on:click={() => handleDelete(stage._id)}>Delete Stage</small>
       </div>
 
       <div class="w-full overflow-x-scroll py-4">
         <div
           class="w-full min-w-max h-[300px] relative flex items-center gap-4"
         >
-          {#each $tasks.filter((t) => t.stageId === stage.id) as task (task.id)}
+          {#each $tasks.filter((t) => t.stageId === stage._id) as task (task._id)}
             <div class="h-full">
               <TaskBox {task} />
             </div>

@@ -8,3 +8,8 @@
 - Dark Mode support.
 - Changed map structure to "top-down" approach.
 - Removed default name "New Task" for newly created task.
+
+# v1.1.0
+- Code refactoring 🔧
+- Ability to delete and edit project 
+- Moved from Zashy to Nex for indexedDB

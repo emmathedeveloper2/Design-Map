@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onDestroy } from 'svelte'
-  import db from "../../zashy/db";
-  import { current_project , projectId , addNewStage } from "../../store";
+  import { current_project , projectId } from "../../store";
   import StageList from "../../components/stage-list.svelte";
   import ProjectMenuBar from '../../components/ui/project-menu-bar.svelte';
+  import { projectStore, type Project } from '../../db';
 
   const load_project = async () => {
 
     if($projectId == undefined) throw new Error('')
 
-    const data = await db.project.getOne($projectId as number);
+    const data = await projectStore.getOne($projectId as number) as Project
 
     current_project.set(data);
   };
@@ -25,7 +25,7 @@
     <h1 class="text-5xl">Loading....</h1>
   </div>
   {:then res}
-  {#if $current_project && $current_project.id}
+  {#if $current_project && $current_project._id}
     <div class="size-full p-4">
       <ProjectMenuBar />
 

@@ -2,8 +2,8 @@
   import { goto } from "$app/navigation";
   import { fade } from "svelte/transition";
   import { projectId, theme } from "../../store";
-  import db from "../../zashy/db";
   import { FilePlus } from "lucide-svelte";
+  import { projectStore } from "../../db";
 
   let modal_open = false;
 
@@ -14,7 +14,7 @@
       new FormData(e.currentTarget)
     ) as { name: string; description: string };
 
-    const id = await db.project.addOne({ name, description });
+    const id = await projectStore.addOne({ name, description , createdAt: (new Date()).getTime() });
 
     projectId.set(id);
 
