@@ -48,13 +48,15 @@
   const handleDelete = async (stageId?: number) => {
     const found = $stages.find((s) => s._id == stageId);
 
-    const totalTasks = $tasks.filter((t) => t.stageId === stageId);
+    const totalTasks = $tasks.filter((t) => t.stageId === stageId && !t.isSubTask).length;
+
+    const totalSubtasks = $tasks.filter((t) => t.stageId === stageId && t.isSubTask).length;
 
     let deletionConfirmed = true;
 
-    if (found && totalTasks.length > 0)
+    if (found && totalTasks > 0)
       deletionConfirmed = await ask(
-        `Do you really want to delete ${found.name} stage with ${totalTasks.length} subtask${totalTasks.length !== 1 ? "s" : ""}`
+        `Do you really want to delete ${found.name} stage with ${totalTasks} task${totalTasks !== 1 ? "s" : ""} ${totalSubtasks > 0 ? `and ${totalSubtasks} subtask${totalSubtasks !== 1 ? "s" : ""}` : ''}`
       );
 
     if (stageId && deletionConfirmed) await deleteStage(stageId);
@@ -65,7 +67,20 @@
       return active_task.set(undefined);
 
     if (e.key.toLowerCase() === "delete" && $active_task) {
-      await deleteTask($active_task);
+
+      const foundTask = $tasks.find((t) => t._id === $active_task);
+
+      const totalSubTasks = foundTask?.subTasks.length || 0
+
+      let deletionConfirmed = true
+
+      if(foundTask && totalSubTasks > 0){
+        deletionConfirmed = await ask(
+        `Do you really want to delete ${foundTask.label.trim() || 'this'} task with ${totalSubTasks} subtask${totalSubTasks !== 1 ? "s" : ""}`
+        );
+      }
+
+      if(deletionConfirmed) await deleteTask($active_task);
 
       active_task.set(undefined);
     }
@@ -100,7 +115,7 @@
         <div
           class="w-full min-w-max h-[300px] relative flex items-center gap-4"
         >
-          {#each $tasks.filter((t) => t.stageId === stage._id) as task (task._id)}
+          {#each $tasks.filter((t) => t.stageId === stage._id && !t.isSubTask) as task (task._id)}
             <div class="h-full">
               <TaskBox {task} />
             </div>
